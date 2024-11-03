@@ -1,8 +1,42 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import bgImg from "../../assets/images/register.jpg";
 import logo from "../../assets/images/logo.png";
+import { useContext } from "react";
+import { AuthContext } from "../../provider/AuthProvider";
+import toast from "react-hot-toast";
 
 const Registration = () => {
+  const navigate = useNavigate();
+  const { user, setUser, createUser, updateUserProfile, signInWithGoogle } =
+    useContext(AuthContext);
+  //   Sign in With Google
+  const handlesGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      toast.success("Sign in successful");
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.message);
+    }
+  };
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const photo = form.photo.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    console.log(name, photo, email, password);
+    try {
+      await signIn(name, photo, email, password);
+      toast.success("Sign in successful");
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.message);
+    }
+  };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
       <div className="flex w-full max-w-sm mx-auto overflow-hidden bg-white rounded-lg shadow-lg  lg:max-w-4xl ">
@@ -15,7 +49,10 @@ const Registration = () => {
             Get Your Free Account Now.
           </p>
 
-          <div className="flex cursor-pointer items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg   hover:bg-gray-50 ">
+          <div
+            onClick={handlesGoogleSignIn}
+            className="flex cursor-pointer items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg   hover:bg-gray-50 "
+          >
             <div className="px-4 py-2">
               <svg className="w-6 h-6" viewBox="0 0 40 40">
                 <path
@@ -51,7 +88,7 @@ const Registration = () => {
 
             <span className="w-1/5 border-b dark:border-gray-400 lg:w-1/4"></span>
           </div>
-          <form>
+          <form onSubmit={handleSignUp}>
             <div>
               <label
                 className="block mb-2 text-sm font-medium text-gray-600 "
