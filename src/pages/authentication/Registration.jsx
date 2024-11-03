@@ -29,7 +29,10 @@ const Registration = () => {
     const password = form.password.value;
     console.log(name, photo, email, password);
     try {
-      await signIn(name, photo, email, password);
+      const result = await signIn(email, password);
+      console.log(result);
+      await updateUserProfile(name, photo);
+      await setUser({ ...user, photoUrl: photo, displayName: name });
       toast.success("Sign in successful");
       navigate("/");
     } catch (err) {
