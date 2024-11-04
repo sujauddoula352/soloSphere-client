@@ -1,5 +1,11 @@
+import Carousel from "../../componants/banner/Carousel";
+
 const Home = () => {
-  return <div></div>;
+  return (
+    <div>
+      <Carousel />
+    </div>
+  );
 };
 
 export default Home;
