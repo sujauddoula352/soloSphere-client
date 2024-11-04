@@ -1,9 +1,14 @@
 import { useContext } from "react";
 import { useLoaderData } from "react-router-dom";
 import { AuthContext } from "../../provider/AuthProvider";
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import axios from "axios";
 
 const JobsDetails = () => {
   const { user } = useContext(AuthContext);
+  const [startDate, setStartDate] = useState(new Date());
   const job = useLoaderData();
   const {
     _id,
@@ -15,7 +20,37 @@ const JobsDetails = () => {
     min_price,
     max_price,
   } = job;
-  console.log(job);
+  const handleFromSubmission = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const jobId = _id;
+    const price = parseFloat(form.price.value);
+    const comment = form.comment.value;
+    const deadline = startDate;
+    const email = user?.email;
+    const status = "Pending";
+    const bidData = {
+      jobId,
+      price,
+      deadline,
+      comment,
+      job_title,
+      category,
+      email,
+      buyer_email,
+      status,
+    };
+    try {
+      const data = await axios.post(
+        `${import.meta.env.VITE_API_URL}/bid`,
+        bidData
+      );
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+    console.table(bidData);
+  };
   return (
     <div className="flex flex-col md:flex-row justify-around gap-5  items-center min-h-[calc(100vh-306px)] md:max-w-screen-xl mx-auto ">
       {/* Job Details */}
@@ -60,7 +95,7 @@ const JobsDetails = () => {
           Place A Bid
         </h2>
 
-        <form>
+        <form onSubmit={handleFromSubmission}>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
               <label className="text-gray-700 " htmlFor="price">
@@ -102,7 +137,11 @@ const JobsDetails = () => {
             <div className="flex flex-col gap-2 ">
               <label className="text-gray-700">Deadline</label>
 
-              {/* Date Picker Input Field */}
+              <DatePicker
+                className="border p-2 rounded-md"
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+              />
             </div>
           </div>
 
