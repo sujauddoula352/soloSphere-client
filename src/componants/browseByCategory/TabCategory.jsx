@@ -1,8 +1,28 @@
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
 import JobCard from "./JobCard";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const TabCategory = () => {
+  const [jobs, setJobs] = useState([]);
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await axios(`${import.meta.env.VITE_API_URL}/jobs`);
+      setJobs(data);
+    };
+    getData();
+  });
+  const webDevelopmentJobs = jobs.filter(
+    (job) => job.category === "Web Development"
+  );
+  const GraphicsDesignJobs = jobs.filter(
+    (job) => job.category === "Graphics Design"
+  );
+  const DigitalMarketingJobs = jobs.filter(
+    (job) => job.category === "Digital Marketing"
+  );
   return (
     <Tabs>
       <div className="container px-6 py-10 mx-auto">
@@ -23,13 +43,25 @@ const TabCategory = () => {
         </div>
 
         <TabPanel>
-          <JobCard />
+          <div className="grid grid-cols-1 mt-8 gap-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {webDevelopmentJobs?.map((job) => (
+              <JobCard key={job._id} job={job} />
+            ))}
+          </div>
         </TabPanel>
         <TabPanel>
-          <h2>Any content 2</h2>
+          <div className="grid grid-cols-1 mt-8 gap-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {GraphicsDesignJobs?.map((job) => (
+              <JobCard key={job._id} job={job} />
+            ))}
+          </div>
         </TabPanel>
         <TabPanel>
-          <h2>Any content 3</h2>
+          <div className="grid grid-cols-1 mt-8 gap-8 xl:mt-16 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {DigitalMarketingJobs?.map((job) => (
+              <JobCard key={job._id} job={job} />
+            ))}
+          </div>
         </TabPanel>
       </div>
     </Tabs>
@@ -37,3 +69,6 @@ const TabCategory = () => {
 };
 
 export default TabCategory;
+// TabCategory.propTypes = {
+//   jobs: PropTypes.arrayOf.isRequired,
+// };

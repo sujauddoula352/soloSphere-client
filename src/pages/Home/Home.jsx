@@ -1,3 +1,4 @@
+import { useLoaderData } from "react-router-dom";
 import Carousel from "../../componants/banner/Carousel";
 import TabCategory from "../../componants/browseByCategory/tabCategory";
 
