@@ -5,7 +5,7 @@ import Footer from "../componants/footer/Footer";
 
 const Main = () => {
   return (
-    <div>
+    <div className="font-lato">
       <Navbar />
       <div className="min-h-[calc(100vh-306px)]">
         <Outlet />
