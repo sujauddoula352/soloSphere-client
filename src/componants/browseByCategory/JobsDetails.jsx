@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const JobsDetails = () => {
   const { user } = useContext(AuthContext);
@@ -21,10 +22,18 @@ const JobsDetails = () => {
     max_price,
   } = job;
   const handleFromSubmission = async (e) => {
+    if (user?.email === buyer_email)
+      return toast.error(
+        "Action not permitted: You cannot perform this action on your own job."
+      );
+
     e.preventDefault();
     const form = e.target;
     const jobId = _id;
     const price = parseFloat(form.price.value);
+    if (price < parseFloat(min_price))
+      return toast.error("Offer more or at least equal to Minimum price");
+
     const comment = form.comment.value;
     const deadline = startDate;
     const email = user?.email;
