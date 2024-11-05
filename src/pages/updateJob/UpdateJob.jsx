@@ -3,15 +3,25 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { AuthContext } from "../../provider/AuthProvider";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const AddJob = () => {
-  const [startDate, setStartDate] = useState(new Date());
-  const { user } = useContext(AuthContext);
+const UpdateJob = () => {
+  const job = useLoaderData();
   const navigate = useNavigate();
-
-  const handleFromSubmission = async (e) => {
+  const {
+    _id,
+    job_title,
+    email,
+    deadline,
+    category,
+    min_price,
+    max_price,
+    description,
+  } = job || {};
+  const [startDate, setStartDate] = useState(new Date(deadline) || new Date());
+  const { user } = useContext(AuthContext);
+  const handleFromUpdate = async (e) => {
     e.preventDefault();
     const form = e.target;
     const job_title = form.job_title.value;
@@ -21,7 +31,7 @@ const AddJob = () => {
     const deadline = startDate;
     const description = form.description.value;
     const email = user?.email;
-    const bidData = {
+    const jobData = {
       job_title,
       email,
       deadline,
@@ -36,14 +46,15 @@ const AddJob = () => {
       },
     };
     try {
-      const data = await axios.post(
-        `${import.meta.env.VITE_API_URL}/job`,
-        bidData
+      const data = await axios.put(
+        `${import.meta.env.VITE_API_URL}/job/${_id}`,
+        jobData
       );
       toast.success("Job Post successfully!");
       navigate("/my-posted-jobs");
     } catch (err) {
-      toast.error(err);
+      console.log(err.message);
+      toast.error(err.message);
     }
   };
   return (
@@ -53,7 +64,7 @@ const AddJob = () => {
           Post a Job
         </h2>
 
-        <form onSubmit={handleFromSubmission}>
+        <form onSubmit={handleFromUpdate}>
           <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
             <div>
               <label className="text-gray-700 " htmlFor="job_title">
@@ -63,6 +74,7 @@ const AddJob = () => {
                 id="job_title"
                 name="job_title"
                 type="text"
+                defaultValue={job_title}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>
@@ -75,7 +87,7 @@ const AddJob = () => {
                 id="emailAddress"
                 type="email"
                 name="email"
-                defaultValue={user?.email}
+                defaultValue={email}
                 disabled
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
@@ -98,6 +110,7 @@ const AddJob = () => {
                 name="category"
                 id="category"
                 className="border p-2 rounded-md"
+                defaultValue={category}
               >
                 <option value="Web Development">Web Development</option>
                 <option value="Graphics Design">Graphics Design</option>
@@ -112,6 +125,7 @@ const AddJob = () => {
                 id="min_price"
                 name="min_price"
                 type="number"
+                defaultValue={min_price}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>
@@ -124,6 +138,7 @@ const AddJob = () => {
                 id="max_price"
                 name="max_price"
                 type="number"
+                defaultValue={max_price}
                 className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               />
             </div>
@@ -136,6 +151,7 @@ const AddJob = () => {
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md  focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40  focus:outline-none focus:ring"
               name="description"
               id="description"
+              defaultValue={description}
             ></textarea>
           </div>
           <div className="flex justify-end mt-6">
@@ -149,4 +165,4 @@ const AddJob = () => {
   );
 };
 
-export default AddJob;
+export default UpdateJob;
