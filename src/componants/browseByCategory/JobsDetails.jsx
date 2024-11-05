@@ -17,17 +17,15 @@ const JobsDetails = () => {
     deadline,
     category,
     description,
-    buyer_email,
+    buyer,
     min_price,
     max_price,
   } = job;
   const handleFromSubmission = async (e) => {
-    if (user?.email === buyer_email)
-      return toast.error(
-        "Action not permitted: You cannot perform this action on your own job."
-      );
-
     e.preventDefault();
+    if (user?.email === buyer.email)
+      return toast.error("You cannot perform this action on your own job.");
+
     const form = e.target;
     const jobId = _id;
     const price = parseFloat(form.price.value);
@@ -46,7 +44,7 @@ const JobsDetails = () => {
       job_title,
       category,
       email,
-      buyer_email,
+      buyer: buyer?.email,
       status,
     };
     try {
@@ -66,7 +64,7 @@ const JobsDetails = () => {
       <div className="flex-1  px-4 py-7 bg-white rounded-md shadow-md md:min-h-[350px]">
         <div className="flex items-center justify-between">
           <span className="text-sm font-light text-gray-800 ">
-            Deadline: {deadline}
+            Deadline: {new Date(deadline).toLocaleDateString()}
           </span>
           <span className="px-4 py-1 text-xs text-blue-800 uppercase bg-blue-200 rounded-full ">
             {category}
@@ -78,19 +76,21 @@ const JobsDetails = () => {
             {job_title}
           </h1>
 
-          <p className="mt-2 text-lg text-gray-600 ">{description}</p>
+          <p className="mt-2 text-lg font-lato text-gray-600 ">{description}</p>
           <p className="mt-6 text-sm font-bold text-gray-600 ">
             Buyer Details:
           </p>
           <div className="flex items-center gap-5">
             <div>
-              <p className="mt-2 text-sm  text-gray-600 ">Name: Jhankar Vai.</p>
               <p className="mt-2 text-sm  text-gray-600 ">
-                Email: {buyer_email}
+                Name: {buyer?.name}
+              </p>
+              <p className="mt-2 text-sm  text-gray-600 ">
+                Email: {buyer?.email}
               </p>
             </div>
             <div className="rounded-full object-cover overflow-hidden w-14 h-14">
-              <img src="" alt="" />
+              <img src={buyer?.photo} alt="" />
             </div>
           </div>
           <p className="mt-6 text-lg font-bold text-gray-600 ">

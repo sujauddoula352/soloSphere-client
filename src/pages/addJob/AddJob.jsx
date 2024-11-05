@@ -4,6 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { AuthContext } from "../../provider/AuthProvider";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AddJob = () => {
   const [startDate, setStartDate] = useState(new Date());
@@ -17,7 +18,7 @@ const AddJob = () => {
     const min_price = parseFloat(form.min_price.value);
     const max_price = parseFloat(form.max_price.value);
     const category = form.category.value;
-    const deadline = form.deadline.value;
+    const deadline = startDate;
     const description = form.description.value;
     const email = user?.email;
     const bidData = {
@@ -30,7 +31,7 @@ const AddJob = () => {
       description,
       buyer: {
         email,
-        name: user?.DisplayName,
+        name: user?.displayName,
         photo: user?.photoURL,
       },
     };
@@ -39,12 +40,12 @@ const AddJob = () => {
         `${import.meta.env.VITE_API_URL}/job`,
         bidData
       );
-      console.log(data);
+      console.log(user);
       toast.success("Job Post successfully!");
+      navigate("/my-posted-jobs");
     } catch (err) {
       console.log(err);
     }
-    console.table(bidData);
   };
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">
