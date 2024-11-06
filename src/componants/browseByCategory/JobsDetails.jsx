@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../provider/AuthProvider";
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
@@ -11,16 +11,17 @@ const JobsDetails = () => {
   const { user } = useContext(AuthContext);
   const [startDate, setStartDate] = useState(new Date());
   const job = useLoaderData();
+  const navigate = useNavigate();
   const {
     _id,
     job_title,
-    deadline,
-    category,
     description,
-    buyer,
     min_price,
     max_price,
-  } = job;
+    category,
+    deadline,
+    buyer,
+  } = job || {};
   const handleFromSubmission = async (e) => {
     e.preventDefault();
     if (user?.email === buyer.email)
@@ -44,8 +45,9 @@ const JobsDetails = () => {
       job_title,
       category,
       email,
-      buyer: buyer?.email,
+      buyer_email: buyer?.email,
       status,
+      buyer,
     };
     try {
       const data = await axios.post(
@@ -53,10 +55,12 @@ const JobsDetails = () => {
         bidData
       );
       console.log(data);
+      toast.success("Bid Placed Successfull");
+      navigate("/my-bids");
     } catch (err) {
-      console.log(err);
+      console.log(err.message);
+      toast.error(err.message);
     }
-    console.table(bidData);
   };
   return (
     <div className="flex flex-col md:flex-row justify-around gap-5  items-center min-h-[calc(100vh-306px)] md:max-w-screen-xl mx-auto ">
