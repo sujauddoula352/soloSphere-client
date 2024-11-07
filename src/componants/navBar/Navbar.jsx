@@ -33,11 +33,23 @@ const Navbar = () => {
               className="btn btn-ghost btn-circle avatar"
             >
               <div className="w-10 rounded-full" title={user?.displayName}>
-                <img
-                  referrerPolicy="no-referrer"
-                  alt="User Profile Photo"
-                  src={user?.photoURL}
-                />
+                {user && user.photoURL ? (
+                  <img
+                    referrerPolicy="no-referrer"
+                    alt="User Profile Photo"
+                    src={user.photoURL}
+                    className="w-full rounded-full"
+                  />
+                ) : (
+                  <div className="avatar">
+                    <div className="w-10 rounded-full">
+                      <img
+                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                        alt="Default Avatar"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             <ul

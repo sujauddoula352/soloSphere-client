@@ -4,6 +4,7 @@ import logo from "../../assets/images/logo.png";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../../provider/AuthProvider";
 import toast from "react-hot-toast";
+import axios from "axios";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,32 +17,49 @@ const Login = () => {
       navigate("/");
     }
   }, [navigate, user]);
+
+  // Handle Google sign-in
   const handlesGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
+      const result = await signInWithGoogle();
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/jwt`,
+        { email: result.user.email },
+        { withCredentials: true }
+      );
+      console.log(data);
       toast.success("Sign in successful");
-      navigate(from, { replace: true });
+      navigate(from || "/", { replace: true });
     } catch (err) {
-      console.log(err);
-      toast.error(err?.message);
+      console.error("Google Sign-In error:", err);
+      toast.error(err?.message || "Sign-in failed");
     }
   };
-  //   Sign in With Email password
+
+  // Handle email-based sign-in
   const handleSignIn = async (e) => {
     e.preventDefault();
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
-    console.log(email, password);
+
     try {
-      await signIn(email, password);
+      const result = await signIn(email, password);
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/jwt`,
+        { email: result.user.email },
+        { withCredentials: true }
+      );
+      console.log(data);
+      // Reusable JWT token request
       toast.success("Sign in successful");
-      navigate(from, { replace: true });
+      navigate(from || "/", { replace: true });
     } catch (err) {
-      console.log(err);
-      toast.error(err?.message);
+      console.error("Email Sign-In error:", err);
+      toast.error(err?.message || "Sign-in failed");
     }
   };
+
   if (user || loading) return;
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-306px)] my-12">

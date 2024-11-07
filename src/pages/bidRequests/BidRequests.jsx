@@ -1,22 +1,37 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../provider/AuthProvider";
 import axios from "axios";
+import toast from "react-hot-toast";
 const BidRequests = () => {
   const [bids, setBids] = useState([]);
   const { user } = useContext(AuthContext);
+
   useEffect(() => {
     getData();
   }, [user]);
+
   const getData = async () => {
-    const { data } = await axios(
-      `${import.meta.env.VITE_API_URL}/bid-requests/${user?.email}`
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/bid-requests/${user?.email}`
+      );
+      setBids(data);
+    } catch (error) {
+      console.error("Error fetching bid requests:", error);
+    }
+  };
+
+  const handleStatus = async (id, prevStatus, status) => {
+    if (prevStatus === status)
+      toast.error("The status has already been updated.");
+    const { data } = await axios.patch(
+      `${import.meta.env.VITE_API_URL}/bid/${id}`,
+      { status }
     );
-    setBids(data);
+    console.log("Status updated:", data);
+    getData();
   };
-  const handleStatus = (id, prevStatus, status) => {
-    console.log(id, prevStatus, status);
-  };
-  console.log(bids);
+
   return (
     <section className="container px-4 mx-auto pt-12">
       <div className="flex items-center gap-x-3">
@@ -88,7 +103,7 @@ const BidRequests = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 ">
                   {bids.map((bid) => (
-                    <tr>
+                    <tr key={bid._id}>
                       <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
                         {bid.job_title}
                       </td>
@@ -162,6 +177,8 @@ const BidRequests = () => {
                             onClick={() =>
                               handleStatus(bid._id, bid.status, "In Progress")
                             }
+                            title="In Progress"
+                            disabled={bid.status === "Complete"}
                             className="text-gray-500 transition-colors duration-200   hover:text-red-500 focus:outline-none"
                           >
                             <svg
@@ -180,7 +197,14 @@ const BidRequests = () => {
                             </svg>
                           </button>
 
-                          <button className="text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none">
+                          <button
+                            onClick={() =>
+                              handleStatus(bid._id, bid.status, "Rejected")
+                            }
+                            disabled={bid.status === "Complete"}
+                            title="Rejected"
+                            className="text-gray-500 transition-colors duration-200   hover:text-yellow-500 focus:outline-none"
+                          >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
